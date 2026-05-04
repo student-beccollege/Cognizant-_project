@@ -1,0 +1,28 @@
+<div class="login-container">
+  <form #LogRef="ngForm" (ngSubmit)="onsubmit(LogRef)">
+    <h2>Login</h2>
+
+    <p *ngIf="message" [ngClass]="{'error-msg': iserror, 'success-msg': !iserror}">
+      {{ message }}
+    </p>
+
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" name="username" [(ngModel)]="logdata.username" required #userRef="ngModel" class="form-control">
+      <small *ngIf="userRef.invalid && userRef.touched">Username is required.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" [(ngModel)]="logdata.password" required #passRef="ngModel" class="form-control">
+      <small *ngIf="passRef.invalid && passRef.touched">Password is required.</small>
+    </div>
+
+    <button type="submit" [disabled]="LogRef.invalid">Sign In</button>
+
+    <p class="signup-link">
+      Don't have an account?
+      <a routerLink="/register">Create one</a>
+    </p>
+  </form>
+</div>

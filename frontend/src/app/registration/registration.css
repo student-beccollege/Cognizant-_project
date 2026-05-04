@@ -1,0 +1,20 @@
+/* Centers the whole thing and adds a background gradient */
+.container {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+  border-color: #0d6efd;
+}
+
+/* Customizing the error text appearance */
+.invalid-feedback {
+  font-size: 0.85rem;
+  font-weight: 500;
+}

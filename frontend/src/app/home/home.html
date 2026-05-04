@@ -1,0 +1,42 @@
+<div class="dashboard-wrapper">
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="brand-icon">💧</span>
+      <span class="brand-name">AQUA-LOGIC</span>
+    </div>
+
+    <div class="nav-center">
+      <ul class="nav-links">
+        <li><a routerLink="/home/dashboard" routerLinkActive="active">Dashboard</a></li>
+        <li><a routerLink="/home" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active">Home</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-right">
+      <div class="session-badge" [class.warning]="sessionTimeLeft.startsWith('00')">
+        <span class="timer-icon">⏳</span>
+        {{ sessionTimeLeft }}
+      </div>
+      <div class="user-profile">
+        <span class="user-name">{{ userName }}</span>
+        <button class="logout-pill" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dashboard-body">
+    <header class="page-header">
+      <div>
+        <h1>System Control Center</h1>
+        <p>Live telemetry & automated monitoring</p>
+      </div>
+      <div class="status-indicator">
+        <span class="dot online"></span> {{ systemStatus }}
+      </div>
+    </header>
+
+    <div class="content-container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

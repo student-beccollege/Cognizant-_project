@@ -1,0 +1,107 @@
+/* Specific container class instead of generic 'div' */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f7f6; /* Light grey background for the whole page */
+  font-family: 'Inter', sans-serif;
+}
+
+form {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 380px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2d3436;
+  font-weight: 700;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+  display: block; /* Ensures vertical stacking */
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #636e72;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1.5px solid #dfe6e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.form-control:focus {
+  border-color: #0984e3;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(9, 132, 227, 0.1);
+}
+
+small {
+  color: #d63031;
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+  display: block;
+}
+
+button {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #0984e3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+button:hover:not(:disabled) {
+  background-color: #074b83;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  background-color: #b2bec3;
+  cursor: not-allowed;
+}
+
+.error-msg { color: #d63031; text-align: center; }
+.success-msg { color: #00b894; text-align: center; }
+
+.signup-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.signup-link a {
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}

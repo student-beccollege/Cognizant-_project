@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="header">
+    <h2>Water Quality Real-Time Monitor</h2>
+    <div class="status-indicator" [ngClass]="waterData?.status === 'DANGER' ? 'danger-bg' : 'safe-bg'">
+      Current Status: {{ waterData?.status || 'IDLE' }}
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <canvas #waterChart></canvas>
+  </div>
+
+  <div class="control-panel">
+    <button [ngClass]="isRunning ? 'btn-stop' : 'btn-start'" (click)="toggleSimulator()">
+      {{ isRunning ? 'Stop Simulator' : 'Start Simulator' }}
+    </button>
+
+    <button class="btn-refresh" (click)="updateFromLatest()" [disabled]="!isRunning">
+      Sync Latest Data
+    </button>
+  </div>
+
+  <div class="stats-grid" *ngIf="waterData">
+    <div class="card">
+      <span class="label">pH Level</span>
+      <span class="value">{{ waterData.ph }}</span>
+    </div>
+    <div class="card">
+      <span class="label">Turbidity</span>
+      <span class="value">{{ waterData.turbidity }} NTU</span>
+    </div>
+    <div class="card">
+      <span class="label">TDS</span>
+      <span class="value">{{ waterData.tds }}</span>
+    </div>
+  </div>
+
+  <p class="timestamp" *ngIf="waterData">
+    Last sync: {{ waterData.timestamp | date:'medium' }}
+  </p>
+</div>
