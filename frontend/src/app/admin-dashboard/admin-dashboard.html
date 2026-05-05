@@ -1,0 +1,113 @@
+<div class="admin-container">
+<div class="admin-inner">
+  <header class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <button class="btn-logout" (click)="onLogout()">Logout</button>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">Users</button>
+    <button [class.active]="activeTab === 'pipes'" (click)="activeTab = 'pipes'">Pipes</button>
+    <button [class.active]="activeTab === 'readings'" (click)="activeTab = 'readings'">Water Readings</button>
+  </div>
+
+  <!-- Users Tab -->
+  <div *ngIf="activeTab === 'users'" class="tab-content">
+    <h2>All Users</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td><span [class]="'badge badge-' + user.role?.toLowerCase()">{{ user.role }}</span></td>
+          <td>
+            <button class="btn-delete" *ngIf="user.role !== 'ADMIN'" (click)="deleteUser(user.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pipes Tab -->
+  <div *ngIf="activeTab === 'pipes'" class="tab-content">
+    <h2>All Pipes</h2>
+
+    <!-- Edit Pipe Form -->
+    <div *ngIf="editingPipe" class="form-card">
+      <h3>Edit Pipe #{{ editingPipe.id }}</h3>
+      <label>Pipe Name</label>
+      <input type="text" [(ngModel)]="editPipeData.pipeName" />
+      <label>Location</label>
+      <input type="text" [(ngModel)]="editPipeData.location" />
+      <div class="form-actions">
+        <button class="btn-save" (click)="submitEditPipe()">Update</button>
+        <button class="btn-cancel" (click)="editingPipe = null">Cancel</button>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Pipe Name</th>
+          <th>Location</th>
+          <th>Owner</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pipe of pipes">
+          <td>{{ pipe.id }}</td>
+          <td>{{ pipe.pipeName }}</td>
+          <td>{{ pipe.location }}</td>
+          <td>{{ pipe.user?.username }}</td>
+          <td>
+            <button class="btn-edit" (click)="startEdit(pipe)">Edit</button>
+            <button class="btn-delete" (click)="deletePipe(pipe.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Readings Tab -->
+  <div *ngIf="activeTab === 'readings'" class="tab-content">
+    <h2>All Water Readings</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Pipe</th>
+          <th>pH</th>
+          <th>Turbidity</th>
+          <th>TDS (mg/L)</th>
+          <th>Status</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of readings">
+          <td>{{ r.id }}</td>
+          <td>{{ r.pipe?.pipeName }}</td>
+          <td>{{ r.ph | number:'1.2-2' }}</td>
+          <td>{{ r.turbidity | number:'1.2-2' }}</td>
+          <td>{{ r.tds | number:'1.0-0' }}</td>
+          <td><span [class]="'badge badge-' + r.status?.toLowerCase()">{{ r.status }}</span></td>
+          <td>{{ r.timestamp | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>

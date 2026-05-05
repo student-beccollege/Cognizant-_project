@@ -1,6 +1,7 @@
 package com.project.watermonitor.service;
 
 import com.project.watermonitor.dto.UserDataDTO;
+import com.project.watermonitor.model.Role;
 import com.project.watermonitor.model.UsersData;
 import com.project.watermonitor.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ public class UserService {
         user.setUsername(userDataDTO.getUsername());
         user.setEmail(userDataDTO.getEmail());
         user.setPassword(userDataDTO.getPassword());
+        user.setRole(Role.USER);
 
         userRepository.save(user);
     }

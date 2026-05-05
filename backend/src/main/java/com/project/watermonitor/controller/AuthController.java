@@ -48,6 +48,7 @@ public class AuthController {
             userService.register(userDataDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of("message", "User registered successfully!"));
+
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", e.getMessage()));
@@ -79,8 +80,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of(
                             "message", "Login successful",
-                            "id", user.getId()
+                            "id", user.getId(),
+                            "role", user.getRole().name()
                     ));
+                    
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid username or password"));

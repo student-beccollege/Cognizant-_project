@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   // Per-pipe state: each pipe tracks its own data and polling
   private pipeData   = new Map<any, any>();    // latest reading per pipe
   private pipePolls  = new Map<any, any>();    // setInterval handle per pipe
-  private pipeCharts = new Map<any, { labels: string[], ph: number[], turbidity: number[] }>();
+  private pipeCharts = new Map<any, { labels: string[], ph: number[], turbidity: number[], tds: number[] }>();
 
   private cdr    = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -42,7 +42,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // ── Lifecycle ───────────────────────────────────────────────────────────────
   ngOnInit() {
-    const userId = localStorage.getItem('userId') || '1';
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.loadPipes(userId);
   }
 
@@ -180,7 +184,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.pipeCharts.set(pipeId, {
       labels:    [...this.chart.data.labels],
       ph:        [...this.chart.data.datasets[0].data],
-      turbidity: [...this.chart.data.datasets[1].data]
+      turbidity: [...this.chart.data.datasets[1].data],
+      tds:       [...this.chart.data.datasets[2].data]
     });
   }
 
@@ -190,6 +195,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chart.data.labels            = [...cache.labels];
     this.chart.data.datasets[0].data  = [...cache.ph];
     this.chart.data.datasets[1].data  = [...cache.turbidity];
+    this.chart.data.datasets[2].data  = [...cache.tds];
     this.chart.update('none');
   }
 
@@ -209,6 +215,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     labels.push(time);
     this.chart.data.datasets[0].data.push(data.ph);
     this.chart.data.datasets[1].data.push(data.turbidity);
+    this.chart.data.datasets[2].data.push(data.tds);
 
     if (labels.length > 15) {
       labels.shift();
@@ -224,8 +231,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       data: {
         labels: [],
         datasets: [
-          { label: 'pH Level',   data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', tension: 0.4, fill: true, pointRadius: 3 },
-          { label: 'Turbidity', data: [], borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.08)',  tension: 0.4, fill: true, pointRadius: 3 }
+          { label: 'pH Level',   data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', tension: 0.4, fill: true, pointRadius: 3, yAxisID: 'y' },
+          { label: 'Turbidity', data: [], borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.08)',  tension: 0.4, fill: true, pointRadius: 3, yAxisID: 'y' },
+          { label: 'TDS (mg/L)', data: [], borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.08)', tension: 0.4, fill: true, pointRadius: 3, yAxisID: 'y1' }
         ]
       },
       options: {
@@ -233,8 +241,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         maintainAspectRatio: false,
         plugins: { legend: { labels: { font: { family: 'Poppins', size: 12 } } } },
         scales: {
-          x: { ticks: { font: { family: 'Poppins', size: 11 } } },
-          y: { ticks: { font: { family: 'Poppins', size: 11 } } }
+          x:  { ticks: { font: { family: 'Poppins', size: 11 } } },
+          y:  { position: 'left',  min: 0, max: 20,  ticks: { font: { family: 'Poppins', size: 11 } }, title: { display: true, text: 'pH / Turbidity' } },
+          y1: { position: 'right', min: 0, max: 600, ticks: { font: { family: 'Poppins', size: 11 } }, title: { display: true, text: 'TDS (mg/L)' }, grid: { drawOnChartArea: false } }
         }
       }
     });
@@ -255,6 +264,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           );
           this.chart.data.datasets[0].data = recent.map((d: any) => d.ph);
           this.chart.data.datasets[1].data = recent.map((d: any) => d.turbidity);
+          this.chart.data.datasets[2].data = recent.map((d: any) => d.tds);
           this.chart.update('none');
         }
       }

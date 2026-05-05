@@ -17,45 +17,7 @@ public class Pipes {
     private String pipeName; // e.g., "Pipe A"
     private String location; // e.g., "Factory Floor"
 
-    public UsersData getUser() {
-        return user;
-    }
-
-    public void setUser(UsersData user) {
-        this.user = user;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPipeName() {
-        return pipeName;
-    }
-
-    public void setPipeName(String pipeName) {
-        this.pipeName = pipeName;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public List<Waterpara> getReadings() {
-        return readings;
-    }
-
-    public void setReadings(List<Waterpara> readings) {
-        this.readings = readings;
-    }
+   
 
     // Each pipe belongs to one user
     @ManyToOne

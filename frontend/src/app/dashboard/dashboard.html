@@ -50,13 +50,13 @@
 
   <!-- STATUS BANNER -->
   <div class="status-banner safe-banner" *ngIf="waterData && waterData.status === 'SAFE'">
-    ✅ &nbsp;<strong>{{ waterData.pipe?.pipeName }}</strong>
+     &nbsp;<strong>{{ waterData.pipe?.pipeName }}</strong>
     &nbsp;— Water quality is SAFE
     <span *ngIf="isRunning"> &nbsp;·&nbsp; <span class="banner-live">LIVE</span></span>
     <span *ngIf="!isRunning"> &nbsp;·&nbsp; Last known · {{ waterData.timestamp | date:'mediumTime' }}</span>
   </div>
   <div class="status-banner danger-banner" *ngIf="waterData && waterData.status !== 'SAFE'">
-    ⚠️ &nbsp;<strong>{{ waterData.pipe?.pipeName }}</strong>
+     &nbsp;<strong>{{ waterData.pipe?.pipeName }}</strong>
     &nbsp;— DANGER detected!
     <span *ngIf="isRunning"> &nbsp;·&nbsp; <span class="banner-live">LIVE</span></span>
     <span *ngIf="!isRunning"> &nbsp;·&nbsp; Last known · {{ waterData.timestamp | date:'mediumTime' }}</span>
@@ -146,7 +146,7 @@
         <div class="chart-header">
           <div>
             <h3>Real-time Analysis</h3>
-            <span class="chart-sub">pH &amp; Turbidity over time</span>
+            <span class="chart-sub">pH, Turbidity &amp; TDS over time</span>
           </div>
           <span class="live-chip" *ngIf="isRunning">
             <span class="live-dot-sm"></span> LIVE

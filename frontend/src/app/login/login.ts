@@ -34,19 +34,23 @@ export class Login {
                  if (response.id) {
                       localStorage.setItem('userId', response.id.toString());
                     }
+                if (response.role) {
+                  localStorage.setItem('role', response.role);
+                }
                 this.message = response.message;
                 this.cdr.detectChanges();
 
-                // 1. Calculate the expiry time
-                const expiryTime = new Date().getTime() + (30 * 60 * 1000);
-
-                // 2. Navigate and PASS the state data
-                this.router.navigate(['/home'], {
+                if (response.role === 'ADMIN') {
+                  this.router.navigate(['/admin-dashboard']);
+                } else {
+                  const expiryTime = new Date().getTime() + (30 * 60 * 1000);
+                  this.router.navigate(['/home'], {
                     state: {
-                        user: Form.value.username, // Use Form.value.username from the NgForm
-                        expiry: expiryTime
+                      user: Form.value.username,
+                      expiry: expiryTime
                     }
-                });
+                  });
+                }
             },
 
               error:(error:any)=>{

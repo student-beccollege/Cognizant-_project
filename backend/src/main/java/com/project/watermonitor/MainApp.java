@@ -8,8 +8,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class MainApp {
     public static void main(String[] args) {
-        // This line launches the built-in Tomcat server
         SpringApplication.run(MainApp.class, args);
-
     }
 }
