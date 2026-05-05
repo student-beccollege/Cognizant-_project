@@ -18,5 +18,15 @@ export class AuthService {
       {
           return this.http.post(`${this.apiurl}/login`,userdata,{});
         }
+
+      logout():Observable<any>
+      {
+          return this.http.post(`${this.apiurl}/logout`,{});
+        }
+
+      me():Observable<any>
+      {
+          return this.http.get(`${this.apiurl}/me`);
+        }
   }
 

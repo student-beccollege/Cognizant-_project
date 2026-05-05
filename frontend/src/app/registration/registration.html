@@ -1,97 +1,79 @@
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; border-radius: 15px;">
-    <h2 class="text-center mb-4">Create Account</h2>
+<div class="reg-page">
+  <div class="reg-card">
+
+    <h1 class="brand">AquaSense</h1>
+    <h2>Create account</h2>
+    <p class="sub">Fill in the details below to get started</p>
+
+    <p *ngIf="message" [class]="iserror ? 'error-msg' : 'success-msg'">{{ message }}</p>
 
     <form #FormRef="ngForm" (ngSubmit)="onsubmit(FormRef)" novalidate>
 
-      <!-- USERNAME -->
-      <div class="mb-3">
-        <label class="form-label">Username</label>
-        <input type="text" name="username"
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" type="text" name="username"
                class="form-control"
-               [class.is-invalid]="user.invalid && (user.touched || user.dirty)"
-               [class.is-valid]="user.valid && user.touched"
-               minlength="3"
-               maxlength="20"
+               placeholder="e.g. john_doe"
+               minlength="3" maxlength="20"
                pattern="^[a-zA-Z0-9_]+$"
-               ngModel #user="ngModel" required>
-
-        <div *ngIf="user.invalid && (user.touched || user.dirty)" class="text-danger small mt-1">
-          <div *ngIf="user.errors?.['required']">Username is required.</div>
-          <div *ngIf="user.errors?.['minlength']">
-            Username must be at least 3 characters.
-          </div>
-          <div *ngIf="user.errors?.['maxlength']">
-            Username cannot exceed 20 characters.
-          </div>
-          <div *ngIf="user.errors?.['pattern']">
-            Username can only contain letters, numbers, and underscores.
-          </div>
+               ngModel #user="ngModel" required />
+        <div class="field-errors" *ngIf="user.invalid && (user.touched || user.dirty)">
+          <small *ngIf="user.errors?.['required']">Username is required.</small>
+          <small *ngIf="user.errors?.['minlength']">At least 3 characters.</small>
+          <small *ngIf="user.errors?.['maxlength']">Max 20 characters.</small>
+          <small *ngIf="user.errors?.['pattern']">Letters, numbers and _ only.</small>
         </div>
       </div>
 
-      <!-- EMAIL -->
-      <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="email" name="email"
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input id="email" type="email" name="email"
                class="form-control"
-               [class.is-invalid]="emailref.invalid && (emailref.touched || emailref.dirty)"
-               [class.is-valid]="emailref.valid && emailref.touched"
-               ngModel #emailref="ngModel" required email>
-
-        <div *ngIf="emailref.invalid && (emailref.touched || emailref.dirty)" class="text-danger small mt-1">
-          <div *ngIf="emailref.errors?.['required']">Email is required.</div>
-          <div *ngIf="emailref.errors?.['email']">
-            Please enter a valid email address.
-          </div>
+               placeholder="you@example.com"
+               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+               ngModel #emailref="ngModel" required email />
+        <div class="field-errors" *ngIf="emailref.invalid && (emailref.touched || emailref.dirty)">
+          <small *ngIf="emailref.errors?.['required']">Email is required.</small>
+          <small *ngIf="emailref.errors?.['email'] || emailref.errors?.['pattern']">Enter a valid email address.</small>
         </div>
       </div>
 
-      <!-- PASSWORD -->
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password" name="password"
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password"
                class="form-control"
-               [class.is-invalid]="passref.invalid && (passref.touched || passref.dirty)"
-               [class.is-valid]="passref.valid && passref.touched"
+               placeholder="Min 8 chars, letters + numbers"
                minlength="8"
                pattern="^(?=.*[A-Za-z])(?=.*\d).+$"
-               ngModel #passref="ngModel" required>
-
-        <div *ngIf="passref.invalid && (passref.touched || passref.dirty)" class="text-danger small mt-1">
-          <div *ngIf="passref.errors?.['required']">Password is required.</div>
-          <div *ngIf="passref.errors?.['minlength']">
-            Password must be at least 8 characters.
-          </div>
-          <div *ngIf="passref.errors?.['pattern']">
-            Password must contain at least one letter and one number.
-          </div>
+               ngModel #passref="ngModel" required />
+        <div class="field-errors" *ngIf="passref.invalid && (passref.touched || passref.dirty)">
+          <small *ngIf="passref.errors?.['required']">Password is required.</small>
+          <small *ngIf="passref.errors?.['minlength']">Must be at least 8 characters.</small>
+          <small *ngIf="passref.errors?.['pattern']">Must include at least one letter and one number.</small>
         </div>
       </div>
 
-      <!-- CONFIRM PASSWORD -->
-      <div class="mb-3">
-        <label class="form-label">Confirm Password</label>
-        <input type="password" name="confirmPassword"
+      <div class="form-group">
+        <label for="confirmPassword">Confirm password</label>
+        <input id="confirmPassword" type="password" name="confirmPassword"
                class="form-control"
-               [class.is-invalid]="confirmRef.touched && confirmRef.value !== passref.value"
-               [class.is-valid]="confirmRef.touched && confirmRef.value === passref.value && confirmRef.value"
-               ngModel #confirmRef="ngModel" required>
-
-        <div *ngIf="confirmRef.touched && confirmRef.value !== passref.value"
-             class="text-danger small mt-1">
-          Passwords do not match.
+               placeholder="Re-enter your password"
+               ngModel #confirmRef="ngModel" required />
+        <div class="field-errors" *ngIf="confirmRef.touched && confirmRef.value !== passref.value">
+          <small>Passwords do not match.</small>
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100 mt-3"
+      <button type="submit" class="btn-register"
               [disabled]="FormRef.invalid || passref.value !== confirmRef.value">
-        Sign Up
+        Create account
       </button>
+
     </form>
 
-    <p class="mt-3 text-center" [style.color]="iserror ? 'red' : 'green'">
-      {{ message }}
+    <p class="footer-link">
+      Already have an account? <a routerLink="/login">Sign in</a>
     </p>
+
   </div>
 </div>

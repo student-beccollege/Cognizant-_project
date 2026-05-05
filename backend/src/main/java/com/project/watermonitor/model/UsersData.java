@@ -1,30 +1,26 @@
 package com.project.watermonitor.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
-import  jakarta.persistence.Id;
 
+import java.util.List;
 
 @Entity
-@Data
 public class UsersData {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(unique = true, nullable = false)
     private String username;
-
-    @Column(unique = true, nullable = false)
     private String email;
-
-    @Column(nullable = false)
     private String password;
+
+    // One user can have many pipes
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Pipes> pipes;
 
     public Long getId() {
         return id;
@@ -56,5 +52,13 @@ public class UsersData {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Pipes> getPipes() {
+        return pipes;
+    }
+
+    public void setPipes(List<Pipes> pipes) {
+        this.pipes = pipes;
     }
 }

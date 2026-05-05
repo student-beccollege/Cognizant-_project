@@ -1,42 +1,53 @@
-<div class="dashboard-wrapper">
-  <nav class="navbar">
-    <div class="nav-left">
-      <span class="brand-icon">💧</span>
-      <span class="brand-name">AQUA-LOGIC</span>
-    </div>
+<div class="home-wrapper">
 
-    <div class="nav-center">
-      <ul class="nav-links">
-        <li><a routerLink="/home/dashboard" routerLinkActive="active">Dashboard</a></li>
-        <li><a routerLink="/home" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active">Home</a></li>
-      </ul>
+  <!-- NAVBAR -->
+  <nav class="main-nav">
+    <div class="nav-brand">
+      <span class="brand-drop">💧</span>
+      <span class="brand-text">AquaSense</span>
     </div>
-
+    <ul class="nav-links">
+      <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
+      <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+      <!-- <li><a href="#contact">Contact</a></li> -->
+    </ul>
     <div class="nav-right">
-      <div class="session-badge" [class.warning]="sessionTimeLeft.startsWith('00')">
-        <span class="timer-icon">⏳</span>
-        {{ sessionTimeLeft }}
+      <div class="session-chip" [class.warn]="sessionTimeLeft.startsWith('00')">
+        <span>⏱</span> {{ sessionTimeLeft }}
       </div>
-      <div class="user-profile">
-        <span class="user-name">{{ userName }}</span>
-        <button class="logout-pill" (click)="logout()">Logout</button>
-      </div>
+      <span class="user-name">{{ userName }}</span>
+      <button class="btn-nav-logout" (click)="logout()">Logout</button>
     </div>
   </nav>
 
-  <main class="dashboard-body">
-    <header class="page-header">
-      <div>
-        <h1>System Control Center</h1>
-        <p>Live telemetry & automated monitoring</p>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-badge">🌊 Real-Time Water Monitoring</span>
+      <h1>Smart Water Quality<br><span class="hero-highlight">Intelligence Platform</span></h1>
+      <p>Monitor pH, turbidity, and TDS across all your water lines in real time. Instant SAFE / DANGER classification against WHO standards.</p>
+      <div class="hero-cta">
+        <a routerLink="/dashboard" class="cta-primary">Open Dashboard →</a>
+        <a href="#features" class="cta-outline">Learn More</a>
       </div>
-      <div class="status-indicator">
-        <span class="dot online"></span> {{ systemStatus }}
-      </div>
-    </header>
-
-    <div class="content-container">
-      <router-outlet></router-outlet>
     </div>
-  </main>
+    <div class="hero-visual">
+      <div class="orbit-wrap">
+        <div class="orbit o1"></div>
+        <div class="orbit o2"></div>
+        <div class="orbit o3"></div>
+        <div class="center-drop">💧</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  
+
+  
+
+  <footer class="site-footer">
+    <p>© 2026 AquaSense &nbsp;·&nbsp; Built with Spring Boot &amp; Angular &nbsp;·&nbsp; Cognizant</p>
+  </footer>
+
 </div>

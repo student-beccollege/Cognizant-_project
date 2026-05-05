@@ -1,42 +1,38 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../service/auth';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home implements OnInit, OnDestroy {
   userName: string = 'Guest';
   sessionTimeLeft: string = '00:00';
-  systemStatus: string = 'Operational';
 
   private expiryTime: number = 0;
   private timerInterval: any;
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {
-    const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras.state as { user: string, expiry: number };
+  constructor(private router: Router, private cdr: ChangeDetectorRef, private authService: AuthService) {
+    const state = history.state as { user: string; expiry: number };
 
-    if (state && state.expiry) {
+    if (state?.expiry) {
       this.userName = state.user;
       this.expiryTime = Number(state.expiry);
-      // Persist for refreshes
       localStorage.setItem('userName', this.userName);
       localStorage.setItem('expiry', this.expiryTime.toString());
     } else {
-      // Try to recover from localStorage or redirect
       const savedUser = localStorage.getItem('userName');
       const savedExpiry = localStorage.getItem('expiry');
       if (savedUser && savedExpiry) {
         this.userName = savedUser;
         this.expiryTime = Number(savedExpiry);
-      } else {
-        this.router.navigate(['/login']);
       }
+      // No redirect here — AuthGuard handles unauthenticated access
     }
   }
 
@@ -46,9 +42,7 @@ export class Home implements OnInit, OnDestroy {
 
   startCountdown() {
     this.updateTimer();
-    this.timerInterval = setInterval(() => {
-      this.updateTimer();
-    }, 1000);
+    this.timerInterval = setInterval(() => this.updateTimer(), 1000);
   }
 
   updateTimer() {
@@ -65,8 +59,10 @@ export class Home implements OnInit, OnDestroy {
 
   logout() {
     if (this.timerInterval) clearInterval(this.timerInterval);
-    localStorage.clear();
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => { localStorage.clear(); this.router.navigate(['/login']); },
+      error: () => { localStorage.clear(); this.router.navigate(['/login']); }
+    });
   }
 
   ngOnDestroy() {

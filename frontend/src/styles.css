@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary:     #0ea5e9;
+  --primary-dk:  #0284c7;
+  --accent:      #06b6d4;
+  --ocean-deep:  #0c1445;
+  --ocean-mid:   #0a3d62;
+  --safe:        #10b981;
+  --danger:      #ef4444;
+  --dark:        #0f172a;
+  --card-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; }
+button { font-family: inherit; }
+input  { font-family: inherit; }

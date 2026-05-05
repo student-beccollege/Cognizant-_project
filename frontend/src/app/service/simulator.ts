@@ -6,41 +6,46 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SimulatorService {
+  // Use the base URL without specific controller paths
+  private apiUrl = 'http://localhost:8081/api';
 
-  // Ensure this matches your Spring Boot server port
-  private baseUrl = 'http://localhost:8081/api/simulator';
+  constructor(private http: HttpClient) { }
 
-  constructor(private http: HttpClient) {}
+  getPipesByUser(userId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/pipes/user/${userId}`);
+  }
 
-  /**
-   * Starts the simulation for a specific user.
-   * Maps to: POST /api/simulator/start/{userId}
-   */
+  addPipe(userId: string, pipeName: string, location: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/pipes/add/${userId}`, { pipeName, location });
+  }
+
+  // Matches @RequestMapping("/api/simulator") -> @PostMapping("/start/{userId}")
   start(userId: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/start/${userId}`, {});
+    return this.http.post(`${this.apiUrl}/simulator/start/${userId}`, {});
   }
 
-  /**
-   * Stops the simulation for a specific user.
-   * Maps to: POST /api/simulator/stop/{userId}
-   */
+  // Matches @RequestMapping("/api/simulator") -> @PostMapping("/stop/{userId}")
   stop(userId: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/stop/${userId}`, {});
+    return this.http.post(`${this.apiUrl}/simulator/stop/${userId}`, {});
   }
 
-  /**
-   * Fetches the single most recent data point for the dashboard cards.
-   * Maps to: GET /api/simulator/latest/{userId}
-   */
-  getUserLatest(userId: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/latest/${userId}`, { });
-  }
-
-  /**
-   * Fetches the entire history for the chart.
-   * Maps to: GET /api/simulator/history/{userId}
-   */
+  // Matches @RequestMapping("/api/simulator") -> @GetMapping("/history/{userId}")
   getUserHistory(userId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/history/${userId}`, {});
+    return this.http.get<any[]>(`${this.apiUrl}/simulator/history/${userId}`);
+  }
+
+  // Matches @RequestMapping("/api/simulator") -> @GetMapping("/latest/{userId}")
+  getUserLatest(userId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/simulator/latest/${userId}`);
+  }
+
+  // Get the latest reading for a specific pipe (used when a pipe is selected in the dropdown)
+  getPipeLatest(pipeId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/simulator/latest/pipe/${pipeId}`);
+  }
+
+  // Get all historical readings for a specific pipe (fills the chart on pipe change)
+  getPipeHistory(pipeId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/simulator/history/pipe/${pipeId}`);
   }
 }

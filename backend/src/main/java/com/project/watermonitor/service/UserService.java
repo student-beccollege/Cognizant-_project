@@ -1,5 +1,6 @@
 package com.project.watermonitor.service;
 
+import com.project.watermonitor.dto.UserDataDTO;
 import com.project.watermonitor.model.UsersData;
 import com.project.watermonitor.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,24 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void register(UsersData userdata) {
-        if (userRepository.existsByUsername(userdata.getUsername())) {
+    public void register(UserDataDTO userDataDTO) {
+        if (userRepository.existsByUsername(userDataDTO.getUsername())) {
             throw new RuntimeException("Error: Username already exists");
         }
 
-        if (userRepository.existsByEmail(userdata.getEmail())) {
+        if (userRepository.existsByEmail(userDataDTO.getEmail())) {
             throw new RuntimeException("Error: Email is already in use!");
         }
 
-        String encodedPassword = passwordEncoder.encode(userdata.getPassword());
-        userdata.setPassword(encodedPassword);
+        String encodedPassword = passwordEncoder.encode(userDataDTO.getPassword());
+        userDataDTO.setPassword(encodedPassword);
 
-        userRepository.save(userdata);
+        UsersData user = new UsersData();
+        user.setUsername(userDataDTO.getUsername());
+        user.setEmail(userDataDTO.getEmail());
+        user.setPassword(userDataDTO.getPassword());
+
+        userRepository.save(user);
     }
 
     // Fixed: This is now a separate method, NOT inside register()

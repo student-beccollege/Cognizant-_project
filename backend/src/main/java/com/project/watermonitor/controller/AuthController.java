@@ -1,10 +1,13 @@
 package com.project.watermonitor.controller;
 
 import com.project.watermonitor.dto.LogindataDTO;
+import com.project.watermonitor.dto.UserDataDTO;
 import com.project.watermonitor.model.UsersData;
 import com.project.watermonitor.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,11 +16,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,15 +34,18 @@ public class AuthController {
     private final SecurityContextRepository securityContextRepository =
             new HttpSessionSecurityContextRepository();
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AuthController(UserService userService, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> registerUser(@RequestBody UsersData usersData) {
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody UserDataDTO userDataDTO) {
         try {
-            userService.register(usersData);
+            userService.register(userDataDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of("message", "User registered successfully!"));
         } catch (RuntimeException e) {
@@ -46,10 +55,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(
-            @RequestBody LogindataDTO logindata,
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LogindataDTO logindata,
             HttpServletRequest request,
             HttpServletResponse response) {
+
+
         try {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     logindata.getUsername(),
@@ -58,16 +68,12 @@ public class AuthController {
 
             Authentication authentication = authenticationManager.authenticate(authToken);
 
-            // Build a fresh SecurityContext and store it on the current thread
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
 
-            // Persist the SecurityContext into the HTTP session so future
-            // requests on different threads can restore the authentication
             securityContextRepository.saveContext(context, request, response);
 
-            // Fetch user to get numeric ID
             UsersData user = userService.findByUsername(logindata.getUsername());
 
             return ResponseEntity.status(HttpStatus.OK)
@@ -79,5 +85,23 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid username or password"));
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            return ResponseEntity.ok(Map.of("username", auth.getName()));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not authenticated"));
     }
 }
