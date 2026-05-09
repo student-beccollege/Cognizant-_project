@@ -1,0 +1,77 @@
+<section class="alerts">
+  <div class="alerts-head">
+    <div>
+      <h1 class="alerts-title">Alerts</h1>
+      <p class="alerts-sub">Recent out-of-range readings reported by the sensors.</p>
+    </div>
+    <span class="alerts-count" *ngIf="filteredAlerts.length > 0">
+      {{ filteredAlerts.length }} of {{ alerts.length }} shown
+    </span>
+  </div>
+
+  <div class="alerts-filters" *ngIf="alerts.length > 0">
+    <div class="filter-group">
+      <label for="sev-filter">Severity</label>
+      <select id="sev-filter" class="filter-select" [(ngModel)]="severityFilter">
+        <option value="ALL">All</option>
+        <option value="DANGER">Critical only</option>
+        <option value="WARN">Warning only</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="dev-filter">Device</label>
+      <select id="dev-filter" class="filter-select" [(ngModel)]="deviceFilter">
+        <option value="ALL">All devices</option>
+        <option *ngFor="let d of deviceOptions" [value]="d">{{ d }}</option>
+      </select>
+    </div>
+
+    <button class="filter-reset"
+            (click)="resetFilters()"
+            [disabled]="severityFilter === 'ALL' && deviceFilter === 'ALL'">
+      Reset
+    </button>
+  </div>
+
+  <div class="alerts-empty" *ngIf="alerts.length === 0">
+    <p>No alerts. All readings are within acceptable limits.</p>
+  </div>
+
+  <div class="alerts-empty" *ngIf="alerts.length > 0 && filteredAlerts.length === 0">
+    <p>No alerts match the current filters.</p>
+  </div>
+
+  <table class="alerts-table" *ngIf="filteredAlerts.length > 0">
+    <thead>
+      <tr>
+        <th class="col-sev">Severity</th>
+        <th>Device</th>
+        <th>Reason</th>
+        <th class="col-ph">pH</th>
+        <th class="col-turb">Turbidity</th>
+        <th class="col-tds">TDS</th>
+        <th class="col-time">When</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of filteredAlerts"
+          [class.row-danger]="a.status === 'DANGER'"
+          [class.row-warn]="a.status !== 'DANGER'">
+        <td>
+          <span class="sev"
+                [class.sev-warn]="a.status !== 'DANGER'"
+                [class.sev-crit]="a.status === 'DANGER'">
+            {{ a.status === 'DANGER' ? 'Critical' : 'Warning' }}
+          </span>
+        </td>
+        <td class="cell-device">{{ a.pipe?.pipeName || 'Unknown' }}</td>
+        <td class="cell-reason">{{ a.alertReason }}</td>
+        <td class="num">{{ a.ph }}</td>
+        <td class="num">{{ a.turbidity }} <span class="unit">NTU</span></td>
+        <td class="num">{{ a.tds }} <span class="unit">mg/L</span></td>
+        <td class="cell-time">{{ timeAgo(a.timestamp) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

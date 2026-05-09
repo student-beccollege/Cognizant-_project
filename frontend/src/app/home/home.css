@@ -58,20 +58,6 @@
   gap: 1rem;
 }
 
-.session-chip {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: #94a3b8;
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-family: monospace;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.session-chip.warn { color: #f87171; border-color: #f87171; }
-
 .user-name {
   color: #e2e8f0;
   font-weight: 600;

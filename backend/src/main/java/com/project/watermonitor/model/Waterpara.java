@@ -1,13 +1,14 @@
 package com.project.watermonitor.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Waterpara {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,10 +17,13 @@ public class Waterpara {
     private double ph;
     private double turbidity;
     private double tds;
-    private String status; // "SAFE" or "DANGER"
+    private double temperature;
+    private double flowRate;
+
     private LocalDateTime timestamp;
 
-   
+    private String status;
+    private String alertReason;
 
     // Each reading belongs to one specific pipe
     @ManyToOne

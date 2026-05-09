@@ -18,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    // Using Constructor Injection (Best Practice)
+  
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

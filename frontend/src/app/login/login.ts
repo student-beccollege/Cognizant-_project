@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {FormsModule,NgForm} from '@angular/forms'
 import {CommonModule} from '@angular/common';
 import {AuthService} from '../service/auth';
@@ -29,27 +28,13 @@ export class Login {
         this.authService.login(Form.value).subscribe(
           {
             next: (response: any) => {
-              console.log("Check this response:", response);
-
-                 if (response.id) {
-                      localStorage.setItem('userId', response.id.toString());
-                    }
-                if (response.role) {
-                  localStorage.setItem('role', response.role);
-                }
                 this.message = response.message;
                 this.cdr.detectChanges();
 
                 if (response.role === 'ADMIN') {
                   this.router.navigate(['/admin-dashboard']);
                 } else {
-                  const expiryTime = new Date().getTime() + (30 * 60 * 1000);
-                  this.router.navigate(['/home'], {
-                    state: {
-                      user: Form.value.username,
-                      expiry: expiryTime
-                    }
-                  });
+                  this.router.navigate(['/home']);
                 }
             },
 

@@ -1,8 +1,10 @@
 package com.project.watermonitor.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class UserDataDTO {
 
     private String username;

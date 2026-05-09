@@ -1,210 +1,225 @@
-<div class="dash-shell">
+<div class="layout">
 
-  <!-- TOP NAV -->
-  <nav class="dash-nav">
-    <div class="nav-brand">
-      <span>💧</span>
-      <span class="brand-name">AquaSense</span>
-    </div>
+  <!-- MAIN -->
+  <div class="main">
 
-    <div class="nav-center">
-      <!-- Pipe tabs -->
-      <div class="pipe-tabs" *ngIf="pipes.length > 0">
-        <button
-          *ngFor="let p of pipes"
-          class="pipe-tab"
-          [class.active]="selectedPipeId === p.id"
-          [class.tab-live]="isPipeRunning(p.id)"
-          (click)="selectPipe(p.id)">
-          <span class="tab-live-dot" *ngIf="isPipeRunning(p.id)"></span>
-          {{ p.pipeName }}
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <button class="brand-btn" (click)="setView('dashboard')" title="Dashboard">
+          <span class="brand-mark">WQ</span>
+          <span class="brand-title">Water Quality Monitor</span>
         </button>
-      </div>
-      <span class="no-pipes-hint" *ngIf="pipes.length === 0">No lines yet — add one →</span>
-
-      <!-- Add Pipe -->
-      <div class="add-pipe-wrap">
-        <button class="btn-add-line" (click)="showAddPipe = !showAddPipe">
-          {{ showAddPipe ? '✕ Cancel' : '＋ Add Line' }}
-        </button>
-        <div class="add-pipe-dropdown" *ngIf="showAddPipe">
-          <input [(ngModel)]="newPipeName"     placeholder="Line name (e.g. Pipe A)" class="add-input" />
-          <input [(ngModel)]="newPipeLocation" placeholder="Location (e.g. Floor 1)"  class="add-input" />
-          <button class="btn-save-line" [disabled]="!newPipeName.trim()" (click)="submitAddPipe()">Save</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="nav-actions">
-      <button
-        class="sim-btn"
-        [class.running]="isRunning"
-        [disabled]="!selectedPipeId"
-        (click)="toggleSimulator()">
-        <span class="live-dot" *ngIf="isRunning"></span>
-        {{ isRunning ? 'Stop Simulator' : '▶ Start Simulator' }}
-      </button>
-      <button class="btn-logout" (click)="onLogout()">Logout</button>
-    </div>
-  </nav>
-
-  <!-- STATUS BANNER -->
-  <div class="status-banner safe-banner" *ngIf="waterData && waterData.status === 'SAFE'">
-     &nbsp;<strong>{{ waterData.pipe?.pipeName }}</strong>
-    &nbsp;— Water quality is SAFE
-    <span *ngIf="isRunning"> &nbsp;·&nbsp; <span class="banner-live">LIVE</span></span>
-    <span *ngIf="!isRunning"> &nbsp;·&nbsp; Last known · {{ waterData.timestamp | date:'mediumTime' }}</span>
-  </div>
-  <div class="status-banner danger-banner" *ngIf="waterData && waterData.status !== 'SAFE'">
-     &nbsp;<strong>{{ waterData.pipe?.pipeName }}</strong>
-    &nbsp;— DANGER detected!
-    <span *ngIf="isRunning"> &nbsp;·&nbsp; <span class="banner-live">LIVE</span></span>
-    <span *ngIf="!isRunning"> &nbsp;·&nbsp; Last known · {{ waterData.timestamp | date:'mediumTime' }}</span>
-  </div>
-
-  <!-- MAIN BODY -->
-  <main class="dash-body">
-
-    <!-- METRIC CARDS -->
-    <div class="metrics-row">
-
-      <div class="metric-card ph-card" [class.dimmed]="!waterData">
-        <div class="mc-top">
-          <span class="mc-icon">⚗️</span>
-          <span class="mc-label">pH Level</span>
-        </div>
-        <div class="mc-value">{{ waterData?.ph ?? '—' }}</div>
-        <div class="mc-bar-bg">
-          <div class="mc-bar-fill ph-fill" [style.width.%]="waterData ? capAt100((waterData.ph / 14) * 100) : 0"></div>
-        </div>
-        <div class="mc-footer">
-          <span class="mc-range">Safe: 6.5 – 8.5</span>
-          <span class="mc-badge" [class.safe-badge]="waterData && waterData.ph >= 6.5 && waterData.ph <= 8.5"
-                                 [class.warn-badge]="waterData && (waterData.ph < 6.5 || waterData.ph > 8.5)">
-            {{ waterData ? (waterData.ph >= 6.5 && waterData.ph <= 8.5 ? 'OK' : '!') : '' }}
-          </span>
-        </div>
-      </div>
-
-      <div class="metric-card turb-card" [class.dimmed]="!waterData">
-        <div class="mc-top">
-          <span class="mc-icon">🌫️</span>
-          <span class="mc-label">Turbidity</span>
-        </div>
-        <div class="mc-value">{{ waterData?.turbidity ?? '—' }} <small>NTU</small></div>
-        <div class="mc-bar-bg">
-          <div class="mc-bar-fill turb-fill" [style.width.%]="waterData ? capAt100((waterData.turbidity / 10) * 100) : 0"></div>
-        </div>
-        <div class="mc-footer">
-          <span class="mc-range">Safe: ≤ 5.0 NTU</span>
-          <span class="mc-badge" [class.safe-badge]="waterData && waterData.turbidity <= 5"
-                                 [class.warn-badge]="waterData && waterData.turbidity > 5">
-            {{ waterData ? (waterData.turbidity <= 5 ? 'OK' : '!') : '' }}
-          </span>
-        </div>
-      </div>
-
-      <div class="metric-card tds-card" [class.dimmed]="!waterData">
-        <div class="mc-top">
-          <span class="mc-icon">🧂</span>
-          <span class="mc-label">TDS</span>
-        </div>
-        <div class="mc-value">{{ waterData?.tds ?? '—' }} <small>mg/L</small></div>
-        <div class="mc-bar-bg">
-          <div class="mc-bar-fill tds-fill" [style.width.%]="waterData ? capAt100((waterData.tds / 800) * 100) : 0"></div>
-        </div>
-        <div class="mc-footer">
-          <span class="mc-range">Safe: ≤ 500 mg/L</span>
-          <span class="mc-badge" [class.safe-badge]="waterData && waterData.tds <= 500"
-                                 [class.warn-badge]="waterData && waterData.tds > 500">
-            {{ waterData ? (waterData.tds <= 500 ? 'OK' : '!') : '' }}
-          </span>
-        </div>
-      </div>
-
-      <div class="metric-card status-card"
-           [class.dimmed]="!waterData"
-           [class.status-safe]="waterData?.status === 'SAFE'"
-           [class.status-danger]="waterData?.status === 'DANGER'">
-        <div class="mc-top">
-          <span class="mc-icon">🛡️</span>
-          <span class="mc-label">Water Status</span>
-        </div>
-        <div class="mc-value status-val">{{ waterData?.status ?? '—' }}</div>
-        <div class="mc-footer" style="margin-top: auto;">
-          <span class="mc-range">WHO Standards</span>
-          <span class="mc-range" *ngIf="waterData?.pipe?.location">📍 {{ waterData.pipe.location }}</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- CHART ROW -->
-    <div class="chart-row">
-
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <h3>Real-time Analysis</h3>
-            <span class="chart-sub">pH, Turbidity &amp; TDS over time</span>
+        <div class="device-picker" [class.is-open]="showPipeDropdown" *ngIf="pipes.length > 0">
+          <button class="btn device-picker-trigger" (click)="showPipeDropdown = !showPipeDropdown">
+            <span class="live-dot" *ngIf="isPipeRunning(selectedPipeId)"></span>
+            <span class="device-picker-trigger-label">{{ selectedPipe?.pipeName || 'Select device' }}</span>
+          </button>
+          <div class="device-picker-menu" *ngIf="showPipeDropdown">
+            <button
+              *ngFor="let p of pipes"
+              class="device-picker-item"
+              [class.is-active]="selectedPipeId === p.id"
+              [class.is-live]="isPipeRunning(p.id)"
+              (click)="selectPipe(p.id); showPipeDropdown = false">
+              <span class="live-dot" *ngIf="isPipeRunning(p.id)"></span>
+              <span class="device-picker-name">{{ p.pipeName }}</span>
+              <span class="device-picker-loc" *ngIf="p.location">{{ p.location }}</span>
+            </button>
           </div>
-          <span class="live-chip" *ngIf="isRunning">
-            <span class="live-dot-sm"></span> LIVE
-          </span>
         </div>
-        <div class="chart-wrap">
-          <canvas #waterChart></canvas>
+        <span class="empty-hint" *ngIf="pipes.length === 0">No devices registered.</span>
+
+        <div class="add-device" [class.is-open]="showAddPipe">
+          <button class="btn btn-secondary" (click)="showAddPipe = !showAddPipe">
+            {{ showAddPipe ? 'Cancel' : 'Add device' }}
+          </button>
+          <div class="add-device-popover" *ngIf="showAddPipe">
+            <p class="add-device-popover-title">New device</p>
+            <div class="add-device-field">
+              <label>Device name</label>
+              <input [(ngModel)]="newPipeName" class="text-input" placeholder="e.g. Pipe A" />
+            </div>
+            <div class="add-device-field">
+              <label>Location</label>
+              <input [(ngModel)]="newPipeLocation" class="text-input" placeholder="e.g. Floor 1" />
+            </div>
+            <button class="btn btn-primary" [disabled]="!newPipeName.trim()" (click)="submitAddPipe()">Save device</button>
+          </div>
         </div>
       </div>
 
-      <!-- SIDE INFO PANEL -->
-      <div class="info-panel" *ngIf="waterData">
-        <h4>Line Details</h4>
-        <div class="info-row">
-          <span class="ir-label">Line</span>
-          <span class="ir-val">{{ waterData.pipe?.pipeName ?? '—' }}</span>
-        </div>
-        <div class="info-row">
-          <span class="ir-label">Location</span>
-          <span class="ir-val">{{ waterData.pipe?.location ?? '—' }}</span>
-        </div>
-        <hr class="divider"/>
-        <div class="info-row">
-          <span class="ir-label">pH</span>
-          <span class="ir-val" [class.val-ok]="waterData.ph >= 6.5 && waterData.ph <= 8.5"
-                               [class.val-bad]="waterData.ph < 6.5 || waterData.ph > 8.5">
-            {{ waterData.ph }}
-          </span>
-        </div>
-        <div class="info-row">
-          <span class="ir-label">Turbidity</span>
-          <span class="ir-val" [class.val-ok]="waterData.turbidity <= 5"
-                               [class.val-bad]="waterData.turbidity > 5">
-            {{ waterData.turbidity }} NTU
-          </span>
-        </div>
-        <div class="info-row">
-          <span class="ir-label">TDS</span>
-          <span class="ir-val" [class.val-ok]="waterData.tds <= 500"
-                               [class.val-bad]="waterData.tds > 500">
-            {{ waterData.tds }} mg/L
-          </span>
-        </div>
-        <hr class="divider"/>
-        <div class="info-row">
-          <span class="ir-label">Status</span>
-          <span class="status-pill" [class.pill-safe]="waterData.status === 'SAFE'"
-                                    [class.pill-danger]="waterData.status !== 'SAFE'">
-            {{ waterData.status }}
-          </span>
-        </div>
-      </div>
+      <div class="header-right">
+        <span class="user-info">
+          <span class="user-info-label">Signed in as</span>
+          <span class="user-info-name">{{ username }}</span>
+        </span>
+        <button
+          class="btn"
+          [class.btn-primary]="!isRunning"
+          [class.btn-stop]="isRunning"
+          [disabled]="!selectedPipeId"
+          (click)="toggleSimulator()">
+          <span class="live-dot" *ngIf="isRunning"></span>
+          {{ isRunning ? 'Stop stream' : 'Start stream' }}
+        </button>
 
-      <div class="info-panel empty-panel" *ngIf="!waterData">
-        <div class="empty-drop">💧</div>
-        <p>Select a monitoring line above and click <strong>Start Simulator</strong> to view live data.</p>
-      </div>
+        <button class="icon-btn"
+                [class.is-active]="activeView === 'alerts'"
+                (click)="setView('alerts')"
+                title="Alerts"
+                aria-label="Alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="icon-btn-badge" *ngIf="alerts.length > 0">{{ alerts.length }}</span>
+        </button>
 
-    </div>
-  </main>
+        <button class="icon-btn icon-btn-profile"
+                [class.is-active]="activeView === 'profile'"
+                (click)="setView('profile')"
+                title="Profile"
+                aria-label="Profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+          </svg>
+        </button>
+
+        <button class="icon-btn"
+                (click)="goHome()"
+                title="Back to Home"
+                aria-label="Back to Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11.5 12 4l9 7.5"></path>
+            <path d="M5 10v10h14V10"></path>
+          </svg>
+        </button>
+
+        <button class="icon-btn icon-btn-logout"
+                (click)="onLogout()"
+                title="Sign out"
+                aria-label="Sign out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <ng-container *ngIf="activeView === 'dashboard'">
+
+        <section class="page-meta">
+          <div>
+            <h1 class="page-title">Live readings</h1>
+            <p class="page-sub">{{ selectedPipe?.pipeName || 'No device selected' }}<span *ngIf="selectedPipe?.location"> &middot; {{ selectedPipe?.location }}</span></p>
+          </div>
+          <div class="page-status" *ngIf="waterData">
+            <span class="status-tag" [class.status-ok]="allSafe()" [class.status-bad]="!allSafe()">
+              {{ allSafe() ? 'Within limits' : 'Out of range' }}
+            </span>
+            <span class="page-status-time">Updated just now</span>
+          </div>
+        </section>
+
+        <section class="metric-row">
+          <div class="metric"
+               *ngFor="let s of sensorList()"
+               [class.metric-bad]="!s.safe && waterData"
+               [class.metric-idle]="!waterData">
+            <div class="metric-head">
+              <span class="metric-name">{{ s.label }}</span>
+              <span class="metric-flag" *ngIf="waterData && !s.safe">OUT</span>
+              <span class="metric-flag metric-flag-ok" *ngIf="waterData && s.safe">OK</span>
+            </div>
+            <div class="metric-value">
+              {{ s.value }}<span class="metric-unit" *ngIf="s.unit"> {{ s.unit }}</span>
+            </div>
+            <div class="metric-foot">Acceptable: {{ s.range }}</div>
+          </div>
+        </section>
+
+        <section class="panel trend-panel">
+          <div class="panel-head trend-panel-head">
+            <h2>pH History Trend</h2>
+          </div>
+
+          <div class="trend-chart" *ngIf="waterData; else noData">
+            <div class="trend-canvas-wrap">
+              <canvas #trendCanvas></canvas>
+            </div>
+          </div>
+
+          <ng-template #noData>
+            <div class="panel-empty">
+              <p>No data yet. Start the stream to populate the trend.</p>
+            </div>
+          </ng-template>
+        </section>
+      </ng-container>
+
+      <!-- ALERTS -->
+      <app-alerts-section *ngIf="activeView === 'alerts'" [alerts]="alerts"></app-alerts-section>
+
+      <!-- ACCOUNT -->
+      <section class="account" *ngIf="activeView === 'profile'">
+        <div class="account-card">
+          <div class="account-head">
+            <div>
+              <h1 class="page-title">Account</h1>
+              <p class="page-sub">Your sign-in details and assigned devices.</p>
+            </div>
+            <button class="btn btn-primary account-print"
+                    (click)="printProfile()"
+                    title="Print water quality monitor details"
+                    aria-label="Print profile">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              Print
+            </button>
+          </div>
+
+          <dl class="account-list">
+            <div class="account-row">
+              <dt>Username</dt>
+              <dd>{{ username || '—' }}</dd>
+            </div>
+            <div class="account-row" *ngIf="email">
+              <dt>Email</dt>
+              <dd>{{ email }}</dd>
+            </div>
+            <div class="account-row">
+              <dt>Role</dt>
+              <dd>{{ role || '—' }}</dd>
+            </div>
+            <div class="account-row">
+              <dt>Devices</dt>
+              <dd>{{ pipes.length }}</dd>
+            </div>
+            <div class="account-row">
+              <dt>Open alerts</dt>
+              <dd>{{ alerts.length }}</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+    </main>
+  </div>
 </div>

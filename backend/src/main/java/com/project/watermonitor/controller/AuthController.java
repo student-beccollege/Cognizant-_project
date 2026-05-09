@@ -6,23 +6,20 @@ import com.project.watermonitor.model.UsersData;
 import com.project.watermonitor.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -30,16 +27,12 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final SecurityContextRepository securityContextRepository =
-            new HttpSessionSecurityContextRepository();
+    private final SecurityContextRepository securityContextRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public AuthController(UserService userService, AuthenticationManager authenticationManager) {
+    public AuthController(UserService userService,
+                          SecurityContextRepository securityContextRepository) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
     }
 
     @PostMapping("/register")
@@ -57,45 +50,40 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LogindataDTO logindata,
-            HttpServletRequest request,
-            HttpServletResponse response) {
-
-
-        try {
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    logindata.getUsername(),
-                    logindata.getPassword()
-            );
-
-            Authentication authentication = authenticationManager.authenticate(authToken);
-
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
-
-            securityContextRepository.saveContext(context, request, response);
-
-            UsersData user = userService.findByUsername(logindata.getUsername());
-
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Map.of(
-                            "message", "Login successful",
-                            "id", user.getId(),
-                            "role", user.getRole().name()
-                    ));
-                    
-        } catch (AuthenticationException e) {
+                                                     HttpServletRequest request,
+                                                     HttpServletResponse response) {
+                                                        
+        Optional<UsersData> match = userService.login(logindata.getUsername(), logindata.getPassword());
+        if (match.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid username or password"));
         }
+        UsersData user = match.get();
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user.getUsername(),
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        );
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+        securityContextRepository.saveContext(context, request, response);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Login successful",
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "role", user.getRole().name()
+        ));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
+        SecurityContextHolder.clearContext();
         return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
 
@@ -103,7 +91,13 @@ public class AuthController {
     public ResponseEntity<?> me() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            return ResponseEntity.ok(Map.of("username", auth.getName()));
+            UsersData user = userService.findByUsername(auth.getName());
+            return ResponseEntity.ok(Map.of(
+                    "username", user.getUsername(),
+                    "id", user.getId(),
+                    "role", user.getRole().name(),
+                    "email", user.getEmail()
+            ));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Not authenticated"));
     }

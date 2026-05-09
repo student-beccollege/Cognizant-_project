@@ -16,49 +16,36 @@ public class SimulatorController {
     private final SensorSimulatorService simulatorService;
     private final WaterRepository waterRepository;
 
-    public SimulatorController(SensorSimulatorService simulatorService, WaterRepository waterRepository) {
+    public SimulatorController(SensorSimulatorService simulatorService,
+                               WaterRepository waterRepository) {
         this.simulatorService = simulatorService;
         this.waterRepository = waterRepository;
     }
 
-    // Start simulation for a specific user (will simulate all pipes owned by this user)
     @PostMapping("/start/{userId}")
-    public Map<String, String> startSimulation(@PathVariable Long userId) {
+    public Map<String, Object> startSimulation(@PathVariable Long userId) {
         simulatorService.start(userId);
-        return Map.of("message", "Simulation started for user ID: " + userId);
+        return Map.of("message", "Simulation started", "userId", userId, "running", true);
     }
 
-    // Stop simulation for a specific user
     @PostMapping("/stop/{userId}")
-    public Map<String, String> stopSimulation(@PathVariable Long userId) {
+    public Map<String, Object> stopSimulation(@PathVariable Long userId) {
         simulatorService.stop(userId);
-        return Map.of("message", "Simulation stopped for user ID: " + userId);
+        return Map.of("message", "Simulation stopped", "userId", userId, "running", false);
     }
 
-    // Get the latest single reading across all pipes for this user
-    @GetMapping("/latest/{userId}")
-    public Waterpara getLatestData(@PathVariable Long userId) {
-        // Updated method name to match the new Pipe->User relationship
-        return waterRepository.findFirstByPipeUserIdOrderByTimestampDesc(userId)
-                .orElse(null);
-    }
-
-    // Get all readings across all pipes for this user (For the Line Chart)
-    @GetMapping("/history/{userId}")
-    public List<Waterpara> getUserHistory(@PathVariable Long userId) {
-        return waterRepository.findByPipeUserIdOrderByTimestampAsc(userId);
-    }
-
-    // Get the latest reading for ONE specific pipe (used by dropdown selection)
     @GetMapping("/latest/pipe/{pipeId}")
     public Waterpara getLatestByPipe(@PathVariable Long pipeId) {
-        return waterRepository.findFirstByPipeIdOrderByTimestampDesc(pipeId)
-                .orElse(null);
+        return waterRepository.findFirstByPipeIdOrderByTimestampDesc(pipeId).orElse(null);
     }
 
-    // Get all readings for ONE specific pipe (used to fill the chart when user picks a pipe)
     @GetMapping("/history/pipe/{pipeId}")
     public List<Waterpara> getHistoryByPipe(@PathVariable Long pipeId) {
         return waterRepository.findByPipeIdOrderByTimestampAsc(pipeId);
+    }
+
+    @GetMapping("/alerts/{userId}")
+    public List<Waterpara> getRecentAlerts(@PathVariable Long userId) {
+        return waterRepository.findTop20ByPipeUserIdAndStatusNotOrderByTimestampDesc(userId, "SAFE");
     }
 }

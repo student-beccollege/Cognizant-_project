@@ -12,9 +12,6 @@
       <!-- <li><a href="#contact">Contact</a></li> -->
     </ul>
     <div class="nav-right">
-      <div class="session-chip" [class.warn]="sessionTimeLeft.startsWith('00')">
-        <span>⏱</span> {{ sessionTimeLeft }}
-      </div>
       <span class="user-name">{{ userName }}</span>
       <button class="btn-nav-logout" (click)="logout()">Logout</button>
     </div>
@@ -28,7 +25,7 @@
       <p>Monitor pH, turbidity, and TDS across all your water lines in real time. Instant SAFE / DANGER classification against WHO standards.</p>
       <div class="hero-cta">
         <a routerLink="/dashboard" class="cta-primary">Open Dashboard →</a>
-        <a href="#features" class="cta-outline">Learn More</a>
+        <!-- <a href="#features" class="cta-outline">Learn More</a> -->
       </div>
     </div>
     <div class="hero-visual">
@@ -40,11 +37,6 @@
       </div>
     </div>
   </section>
-
-  <!-- FEATURES -->
-  
-
-  
 
   <footer class="site-footer">
     <p>© 2026 AquaSense &nbsp;·&nbsp; Built with Spring Boot &amp; Angular &nbsp;·&nbsp; Cognizant</p>
