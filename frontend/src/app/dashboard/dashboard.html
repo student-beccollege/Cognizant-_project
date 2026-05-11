@@ -1,52 +1,21 @@
 <div class="layout">
 
-  <!-- MAIN -->
   <div class="main">
 
-    <!-- HEADER -->
     <header class="header">
       <div class="header-left">
         <button class="brand-btn" (click)="setView('dashboard')" title="Dashboard">
           <span class="brand-mark">WQ</span>
           <span class="brand-title">Water Quality Monitor</span>
         </button>
-        <div class="device-picker" [class.is-open]="showPipeDropdown" *ngIf="pipes.length > 0">
-          <button class="btn device-picker-trigger" (click)="showPipeDropdown = !showPipeDropdown">
-            <span class="live-dot" *ngIf="isPipeRunning(selectedPipeId)"></span>
-            <span class="device-picker-trigger-label">{{ selectedPipe?.pipeName || 'Select device' }}</span>
-          </button>
-          <div class="device-picker-menu" *ngIf="showPipeDropdown">
-            <button
-              *ngFor="let p of pipes"
-              class="device-picker-item"
-              [class.is-active]="selectedPipeId === p.id"
-              [class.is-live]="isPipeRunning(p.id)"
-              (click)="selectPipe(p.id); showPipeDropdown = false">
-              <span class="live-dot" *ngIf="isPipeRunning(p.id)"></span>
-              <span class="device-picker-name">{{ p.pipeName }}</span>
-              <span class="device-picker-loc" *ngIf="p.location">{{ p.location }}</span>
-            </button>
-          </div>
-        </div>
-        <span class="empty-hint" *ngIf="pipes.length === 0">No devices registered.</span>
 
-        <div class="add-device" [class.is-open]="showAddPipe">
-          <button class="btn btn-secondary" (click)="showAddPipe = !showAddPipe">
-            {{ showAddPipe ? 'Cancel' : 'Add device' }}
-          </button>
-          <div class="add-device-popover" *ngIf="showAddPipe">
-            <p class="add-device-popover-title">New device</p>
-            <div class="add-device-field">
-              <label>Device name</label>
-              <input [(ngModel)]="newPipeName" class="text-input" placeholder="e.g. Pipe A" />
-            </div>
-            <div class="add-device-field">
-              <label>Location</label>
-              <input [(ngModel)]="newPipeLocation" class="text-input" placeholder="e.g. Floor 1" />
-            </div>
-            <button class="btn btn-primary" [disabled]="!newPipeName.trim()" (click)="submitAddPipe()">Save device</button>
-          </div>
-        </div>
+        <app-pipe-picker
+          [pipes]="pipes"
+          [selectedPipeId]="selectedPipeId"
+          [isRunning]="isRunning"
+          (pipeSelected)="selectPipe($event)"
+          (addPipe)="submitAddPipe($event)">
+        </app-pipe-picker>
       </div>
 
       <div class="header-right">
@@ -114,10 +83,8 @@
       </div>
     </header>
 
-    <!-- CONTENT -->
     <main class="content">
 
-      <!-- DASHBOARD -->
       <ng-container *ngIf="activeView === 'dashboard'">
 
         <section class="page-meta">
@@ -125,7 +92,7 @@
             <h1 class="page-title">Live readings</h1>
             <p class="page-sub">{{ selectedPipe?.pipeName || 'No device selected' }}<span *ngIf="selectedPipe?.location"> &middot; {{ selectedPipe?.location }}</span></p>
           </div>
-          <div class="page-status" *ngIf="waterData">
+          <div class="page-status" *ngIf="latest">
             <span class="status-tag" [class.status-ok]="allSafe()" [class.status-bad]="!allSafe()">
               {{ allSafe() ? 'Within limits' : 'Out of range' }}
             </span>
@@ -133,46 +100,13 @@
           </div>
         </section>
 
-        <section class="metric-row">
-          <div class="metric"
-               *ngFor="let s of sensorList()"
-               [class.metric-bad]="!s.safe && waterData"
-               [class.metric-idle]="!waterData">
-            <div class="metric-head">
-              <span class="metric-name">{{ s.label }}</span>
-              <span class="metric-flag" *ngIf="waterData && !s.safe">OUT</span>
-              <span class="metric-flag metric-flag-ok" *ngIf="waterData && s.safe">OK</span>
-            </div>
-            <div class="metric-value">
-              {{ s.value }}<span class="metric-unit" *ngIf="s.unit"> {{ s.unit }}</span>
-            </div>
-            <div class="metric-foot">Acceptable: {{ s.range }}</div>
-          </div>
-        </section>
+        <app-metric-cards [data]="latest"></app-metric-cards>
 
-        <section class="panel trend-panel">
-          <div class="panel-head trend-panel-head">
-            <h2>pH History Trend</h2>
-          </div>
-
-          <div class="trend-chart" *ngIf="waterData; else noData">
-            <div class="trend-canvas-wrap">
-              <canvas #trendCanvas></canvas>
-            </div>
-          </div>
-
-          <ng-template #noData>
-            <div class="panel-empty">
-              <p>No data yet. Start the stream to populate the trend.</p>
-            </div>
-          </ng-template>
-        </section>
+        <app-trend-chart [history]="history"></app-trend-chart>
       </ng-container>
 
-      <!-- ALERTS -->
       <app-alerts-section *ngIf="activeView === 'alerts'" [alerts]="alerts"></app-alerts-section>
 
-      <!-- ACCOUNT -->
       <section class="account" *ngIf="activeView === 'profile'">
         <div class="account-card">
           <div class="account-head">
@@ -180,10 +114,7 @@
               <h1 class="page-title">Account</h1>
               <p class="page-sub">Your sign-in details and assigned devices.</p>
             </div>
-            <button class="btn btn-primary account-print"
-                    (click)="printProfile()"
-                    title="Print water quality monitor details"
-                    aria-label="Print profile">
+
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
                    stroke="currentColor" stroke-width="2"
                    stroke-linecap="round" stroke-linejoin="round">
@@ -191,8 +122,7 @@
                 <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                 <rect x="6" y="14" width="12" height="8"></rect>
               </svg>
-              Print
-            </button>
+
           </div>
 
           <dl class="account-list">

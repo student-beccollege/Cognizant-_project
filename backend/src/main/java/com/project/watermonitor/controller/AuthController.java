@@ -1,14 +1,16 @@
 package com.project.watermonitor.controller;
 
-import com.project.watermonitor.dto.LogindataDTO;
+import com.project.watermonitor.dto.LoginRequest;
 import com.project.watermonitor.dto.UserDataDTO;
-import com.project.watermonitor.model.UsersData;
+import com.project.watermonitor.model.User;
 import com.project.watermonitor.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 @RestController
@@ -42,41 +43,40 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(Map.of("message", "User registered successfully!"));
 
-        } catch (RuntimeException e) {
+        } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", e.getMessage()));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LogindataDTO logindata,
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest,
                                                      HttpServletRequest request,
                                                      HttpServletResponse response) {
-                                                        
-        Optional<UsersData> match = userService.login(logindata.getUsername(), logindata.getPassword());
-        if (match.isEmpty()) {
+        try {
+            User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    user.getUsername(),
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+            );
+
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+            securityContextRepository.saveContext(context, request, response);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Login successful",
+                    "id", user.getId(),
+                    "username", user.getUsername(),
+                    "role", user.getRole().name()
+            ));
+        } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid username or password"));
+                    .body(Map.of("message", e.getMessage()));
         }
-        UsersData user = match.get();
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.getUsername(),
-                null,
-                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-        );
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-        securityContextRepository.saveContext(context, request, response);
-
-        return ResponseEntity.ok(Map.of(
-                "message", "Login successful",
-                "id", user.getId(),
-                "username", user.getUsername(),
-                "role", user.getRole().name()
-        ));
     }
 
     @PostMapping("/logout")
@@ -91,7 +91,7 @@ public class AuthController {
     public ResponseEntity<?> me() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            UsersData user = userService.findByUsername(auth.getName());
+            User user = userService.findByUsername(auth.getName());
             return ResponseEntity.ok(Map.of(
                     "username", user.getUsername(),
                     "id", user.getId(),

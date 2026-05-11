@@ -1,0 +1,75 @@
+:host {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.metric {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+}
+.metric-bad  { border-color: rgba(239, 68, 68, 0.45); }
+.metric-idle { background: rgba(15, 23, 42, 0.30); }
+
+.metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.metric-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.metric-flag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  border-radius: 2px;
+  letter-spacing: 0.4px;
+}
+.metric-flag-ok {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+.metric-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: #f1f5f9;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.metric-unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-left: 2px;
+}
+.metric-foot {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+@media (max-width: 520px) {
+  .metric-row { grid-template-columns: 1fr; }
+}

@@ -1,6 +1,6 @@
 package com.project.watermonitor.controller;
 
-import com.project.watermonitor.model.Waterpara;
+import com.project.watermonitor.model.WaterReading;
 import com.project.watermonitor.repository.WaterRepository;
 import com.project.watermonitor.service.SensorSimulatorService;
 import org.springframework.web.bind.annotation.*;
@@ -35,17 +35,17 @@ public class SimulatorController {
     }
 
     @GetMapping("/latest/pipe/{pipeId}")
-    public Waterpara getLatestByPipe(@PathVariable Long pipeId) {
+    public WaterReading getLatestByPipe(@PathVariable Long pipeId) {
         return waterRepository.findFirstByPipeIdOrderByTimestampDesc(pipeId).orElse(null);
     }
 
     @GetMapping("/history/pipe/{pipeId}")
-    public List<Waterpara> getHistoryByPipe(@PathVariable Long pipeId) {
+    public List<WaterReading> getHistoryByPipe(@PathVariable Long pipeId) {
         return waterRepository.findByPipeIdOrderByTimestampAsc(pipeId);
     }
 
     @GetMapping("/alerts/{userId}")
-    public List<Waterpara> getRecentAlerts(@PathVariable Long userId) {
+    public List<WaterReading> getRecentAlerts(@PathVariable Long userId) {
         return waterRepository.findTop20ByPipeUserIdAndStatusNotOrderByTimestampDesc(userId, "SAFE");
     }
 }

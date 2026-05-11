@@ -1,8 +1,8 @@
 package com.project.watermonitor.service;
 
-import com.project.watermonitor.model.Pipes;
-import com.project.watermonitor.model.UsersData;
-import com.project.watermonitor.model.Waterpara;
+import com.project.watermonitor.model.Pipe;
+import com.project.watermonitor.model.User;
+import com.project.watermonitor.model.WaterReading;
 import com.project.watermonitor.repository.WaterRepository;
 import com.project.watermonitor.repository.UserRepository;
 import com.project.watermonitor.repository.PipeRepository;
@@ -41,7 +41,7 @@ public class SensorSimulatorService {
             return;
         }
 
-        Optional<UsersData> userOpt = userRepository.findById(userId);
+        Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             System.err.println("Cannot start simulator: User " + userId + " not found.");
             return;
@@ -52,10 +52,10 @@ public class SensorSimulatorService {
 
         try {
             while (userSimulations.getOrDefault(userId, false)) {
-                List<Pipes> userPipes = pipeRepository.findByUserId(userId);
+                List<Pipe> userPipes = pipeRepository.findByUserId(userId);
 
                 if (userPipes != null && !userPipes.isEmpty()) {
-                    for (Pipes pipe : userPipes) {
+                    for (Pipe pipe : userPipes) {
                         generateAndSave(pipe);
                     }
                 } else {
@@ -74,14 +74,13 @@ public class SensorSimulatorService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void generateAndSave(Pipes pipe) {
+    public void generateAndSave(Pipe pipe) {
         try {
-            Waterpara data = new Waterpara();
+            WaterReading data = new WaterReading();
 
-            // ── Simulated sensor readings ───────────────────────────────────────
-            double ph    = round2(6.0 + Math.random() * 3.0);         // 6.0 – 9.0
-            double turb  = round2(Math.random() * 7.0);               // 0   – 7.0 NTU
-            double tds   = round2(150 + Math.random() * 500);         // 150 – 650 mg/L
+            double ph    = round2(6.0 + Math.random() * 3.0);
+            double turb  = round2(Math.random() * 7.0);
+            double tds   = round2(150 + Math.random() * 500);
 
 
             data.setPh(ph);
@@ -89,9 +88,8 @@ public class SensorSimulatorService {
             data.setTds(tds);
             data.setPipe(pipe);
             data.setTimestamp(LocalDateTime.now());
-            
 
-            // ── Status evaluation against WHO/IS:10500 thresholds ───────────────
+
             List<String> reasons = new ArrayList<>();
             if (ph < 6.5 || ph > 8.5)       reasons.add("pH out of range");
             if (turb > 5.0)                 reasons.add("High turbidity");
@@ -114,7 +112,7 @@ public class SensorSimulatorService {
                         " | " + data.getStatus() + " | " + data.getAlertReason());
             }
 
-            waterRepository.saveAndFlush(data);
+            waterRepository.save(data);
 
         } catch (Exception e) {
             System.err.println("Error saving data for pipe " + pipe.getId() + ": " + e.getMessage());

@@ -1,0 +1,38 @@
+<div class="device-picker" [class.is-open]="showPipeDropdown" *ngIf="pipes.length > 0">
+  <button class="btn device-picker-trigger" (click)="showPipeDropdown = !showPipeDropdown">
+    <span class="live-dot" *ngIf="isRunning && selectedPipe"></span>
+    <span class="device-picker-trigger-label">{{ selectedPipe?.pipeName || 'Select device' }}</span>
+  </button>
+  <div class="device-picker-menu" *ngIf="showPipeDropdown">
+    <button
+      *ngFor="let p of pipes"
+      class="device-picker-item"
+      [class.is-active]="selectedPipeId === p.id"
+      [class.is-live]="isRunning && selectedPipeId === p.id"
+      (click)="selectPipe(p.id)">
+      <span class="live-dot" *ngIf="isRunning && selectedPipeId === p.id"></span>
+      <span class="device-picker-name">{{ p.pipeName }}</span>
+      <span class="device-picker-loc" *ngIf="p.location">{{ p.location }}</span>
+    </button>
+  </div>
+</div>
+
+<span class="empty-hint" *ngIf="pipes.length === 0">No devices registered.</span>
+
+<div class="add-device" [class.is-open]="showAddPipe">
+  <button class="btn btn-secondary" (click)="showAddPipe = !showAddPipe">
+    {{ showAddPipe ? 'Cancel' : 'Add device' }}
+  </button>
+  <div class="add-device-popover" *ngIf="showAddPipe">
+    <p class="add-device-popover-title">New device</p>
+    <div class="add-device-field">
+      <label>Device name</label>
+      <input [(ngModel)]="newPipeName" class="text-input" placeholder="e.g. Pipe A" />
+    </div>
+    <div class="add-device-field">
+      <label>Location</label>
+      <input [(ngModel)]="newPipeLocation" class="text-input" placeholder="e.g. Floor 1" />
+    </div>
+    <button class="btn btn-primary" [disabled]="!newPipeName.trim()" (click)="submitAddPipe()">Save device</button>
+  </div>
+</div>

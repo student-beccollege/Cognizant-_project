@@ -9,7 +9,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Pipes {
+@Table(name = "pipes")
+public class Pipe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,9 +20,9 @@ public class Pipes {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UsersData user;
+    private User user;
 
     @OneToMany(mappedBy = "pipe", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Waterpara> readings;
+    private List<WaterReading> readings;
 }

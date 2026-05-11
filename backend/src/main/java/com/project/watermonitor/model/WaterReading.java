@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class Waterpara {
+@Table(name = "water_readings")
+public class WaterReading {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,8 +26,7 @@ public class Waterpara {
     private String status;
     private String alertReason;
 
-    // Each reading belongs to one specific pipe
     @ManyToOne
     @JoinColumn(name = "pipe_id")
-    private Pipes pipe;
+    private Pipe pipe;
 }

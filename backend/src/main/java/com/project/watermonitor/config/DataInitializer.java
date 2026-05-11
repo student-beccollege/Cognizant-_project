@@ -1,7 +1,7 @@
 package com.project.watermonitor.config;
 
 import com.project.watermonitor.model.Role;
-import com.project.watermonitor.model.UsersData;
+import com.project.watermonitor.model.User;
 import com.project.watermonitor.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +21,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (!userRepository.existsByUsername("admin")) {
-            UsersData admin = new UsersData();
+            User admin = new User();
             admin.setUsername("admin");
             admin.setEmail("admin@watermonitor.com");
             admin.setPassword(passwordEncoder.encode("admin123"));

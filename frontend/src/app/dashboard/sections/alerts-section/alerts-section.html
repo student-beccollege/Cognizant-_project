@@ -14,7 +14,7 @@
       <label for="sev-filter">Severity</label>
       <select id="sev-filter" class="filter-select" [(ngModel)]="severityFilter">
         <option value="ALL">All</option>
-        <option value="DANGER">Critical only</option>
+        <option value="DANGER">Danger only</option>
         <option value="WARN">Warning only</option>
       </select>
     </div>
@@ -62,7 +62,7 @@
           <span class="sev"
                 [class.sev-warn]="a.status !== 'DANGER'"
                 [class.sev-crit]="a.status === 'DANGER'">
-            {{ a.status === 'DANGER' ? 'Critical' : 'Warning' }}
+            {{ a.status === 'DANGER' ? 'Danger' : 'Warning' }}
           </span>
         </td>
         <td class="cell-device">{{ a.pipe?.pipeName || 'Unknown' }}</td>

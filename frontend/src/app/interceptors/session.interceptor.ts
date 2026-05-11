@@ -6,7 +6,6 @@ import { catchError, throwError } from 'rxjs';
 export const sessionInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
-  // Send the JSESSIONID cookie on every request so the server can resolve the session.
   const authReq = req.clone({ withCredentials: true });
 
   return next(authReq).pipe(

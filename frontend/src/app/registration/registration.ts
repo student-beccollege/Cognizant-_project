@@ -3,7 +3,7 @@ import {FormsModule,NgForm} from '@angular/forms'
 import {CommonModule} from '@angular/common';
 import {AuthService} from '../service/auth';
 import { ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-registration',
@@ -17,7 +17,8 @@ export class Registration {
     message:String='';
 
     constructor(private authService:AuthService,
-        private cdr: ChangeDetectorRef)
+        private cdr: ChangeDetectorRef,
+        private router: Router)
     {
 
     }
@@ -28,6 +29,7 @@ export class Registration {
               this.iserror=false;
               this.message = response.message;
               this.cdr.detectChanges();
+              setTimeout(() => this.router.navigate(['/login']), 1200);
               }
             ,
             error:(error:any)=>

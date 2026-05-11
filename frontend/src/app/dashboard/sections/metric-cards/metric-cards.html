@@ -1,0 +1,16 @@
+<section class="metric-row">
+  <div class="metric"
+       *ngFor="let s of sensors()"
+       [class.metric-bad]="!s.safe && data"
+       [class.metric-idle]="!data">
+    <div class="metric-head">
+      <span class="metric-name">{{ s.label }}</span>
+      <span class="metric-flag" *ngIf="data && !s.safe">OUT</span>
+      <span class="metric-flag metric-flag-ok" *ngIf="data && s.safe">OK</span>
+    </div>
+    <div class="metric-value">
+      {{ s.value }}<span class="metric-unit" *ngIf="s.unit"> {{ s.unit }}</span>
+    </div>
+    <div class="metric-foot">Acceptable: {{ s.range }}</div>
+  </div>
+</section>

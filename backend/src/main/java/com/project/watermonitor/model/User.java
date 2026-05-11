@@ -10,14 +10,15 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class UsersData {
+@Table(name = "app_users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
     private String username;
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     @JsonIgnore
@@ -27,8 +28,7 @@ public class UsersData {
     @Column(nullable = false)
     private Role role = Role.USER;
 
-    // One user can have many pipes
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Pipes> pipes;
+    private List<Pipe> pipes;
 }

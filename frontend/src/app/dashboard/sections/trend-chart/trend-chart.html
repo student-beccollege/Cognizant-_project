@@ -1,0 +1,17 @@
+<section class="panel trend-panel">
+  <div class="panel-head trend-panel-head">
+    <h2>pH History Trend</h2>
+  </div>
+
+  <div class="trend-chart" *ngIf="hasData(); else noData">
+    <div class="trend-canvas-wrap">
+      <canvas #trendCanvas></canvas>
+    </div>
+  </div>
+
+  <ng-template #noData>
+    <div class="panel-empty">
+      <p>No data yet. Start the stream to populate the trend.</p>
+    </div>
+  </ng-template>
+</section>

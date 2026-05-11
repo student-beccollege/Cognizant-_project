@@ -5,22 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5849eec3-0fd2-49d9-a1da-6a5a23338aac" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/WaterQualityMonitoring.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/MainApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/MainApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/config/SpringSecurity.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/config/SpringSecurity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/dto/UserDataDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/dto/UserDataDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/controller/PipeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/controller/PipeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/controller/SimulatorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/controller/SimulatorController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/model/Pipes.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/model/Pipes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/model/UsersData.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/model/UsersData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/model/Waterpara.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/model/Waterpara.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/repository/WaterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/repository/WaterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/service/SensorSimulatorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/watermonitor/service/SensorSimulatorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/Application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/Application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/dashboard/dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/dashboard/dashboard.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/dashboard/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/dashboard/dashboard.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/dashboard/dashboard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/dashboard/dashboard.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/guards/admin.guard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/guards/admin.guard.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/guards/auth.guard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/guards/auth.guard.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/home/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/home/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/home/home.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/home/home.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/interceptors/session.interceptor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/interceptors/session.interceptor.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/login/login.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/login/login.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/service/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/service/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/service/simulator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/service/simulator.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
